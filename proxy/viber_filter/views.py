@@ -5,5 +5,5 @@ from rest_framework.response import Response
 class ViberMessage(viewsets.ViewSet):
     def create(self, request):
         data = request.data
-        print(data)
+        print(data['event'])
         return Response(status=status.HTTP_200_OK)
