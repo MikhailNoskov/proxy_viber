@@ -9,6 +9,7 @@ from logging import getLogger
 logger = getLogger('celery_logs')
 r = redis.Redis()
 
+
 @shared_task(bind=True, max_retries=5)
 def resend_to_main(self):
     """
@@ -28,8 +29,8 @@ def resend_to_main(self):
                 'X-Celery-ID': task_id
             }
             # Абстрактеый урл главного сервиса
-            url = 'https://chatbot.com/webhook'
-            # url = 'http://127.0.0.1:8000/viber_messages/main/'
+            # url = 'https://chatbot.com/webhook'
+            url = 'http://127.0.0.1:8000/viber_messages/main/'
 
             thread = threading.Thread(target=send_request_to_main, args=(url, key, headers, message))
             thread.start()

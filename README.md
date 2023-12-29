@@ -1,0 +1,10 @@
+<b>Abstract URL</b>
+
+
+![Screenshot from 2023-12-29 23-17-16.png](..%2F..%2FPictures%2FScreenshot%20from%202023-12-29%2023-17-16.png)
+
+<b>Pseudo MainServise</b>
+
+![Screenshot from 2023-12-29 23-23-27.png](..%2F..%2FPictures%2FScreenshot%20from%202023-12-29%2023-23-27.png)
+
+![Screenshot from 2023-12-29 23-23-40.png](..%2F..%2FPictures%2FScreenshot%20from%202023-12-29%2023-23-40.png)
