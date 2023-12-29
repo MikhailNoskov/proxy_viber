@@ -31,12 +31,6 @@ def add_to_queue(data):
             if not r.exists(hash_key):
                 r.sadd('hashkeys', hash_key)
                 r.set(hash_key, encoded_data)
-                for key in list(r.smembers('hashkeys'))[:2]:
-                    message = r.get(key)
-                    r.delete(key)
-                    r.srem('hashkeys', key)
-                    print(message)
-                    print(r.smembers('hashkeys'))
         return REPLIES[event]
     except Exception:
         return {}
