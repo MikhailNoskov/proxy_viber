@@ -1,3 +1,5 @@
+import threading
+
 from celery import shared_task
 import redis
 import json
@@ -16,19 +18,24 @@ def resend_to_main(self):
     """
     try:
         task_id = resend_to_main.request.id
-        # Здесь вместо цикла можно пульнуть через threading. Оставил пока так
-        for key in list(r.smembers('hashkeys'))[:8]:
+        keys = list(r.smembers('hashkeys'))[:8]
+        logger.info(msg=keys)
+        threads = []
+        for key in keys:
             message = r.get(key)
             headers = {
                 'Content-Type': 'application/json',
                 'X-Celery-ID': task_id
             }
             # Абстрактеый урл главного сервиса
-            url = 'http://'
-            requests.post(url=url, headers=headers, json=json.loads(message))
-            logger.info(msg=f'Message with {key} hash has been sent')
-            r.delete(key)
-            r.srem('hashkeys', key)
+            url = 'https://chatbot.com/webhook'
+            # url = 'http://127.0.0.1:8000/viber_messages/main/'
+
+            thread = threading.Thread(target=send_request_to_main, args=(url, key, headers, message))
+            thread.start()
+            threads.append(thread)
+        for thread in threads:
+            thread.join()
     except Exception as error:
         logger.error(msg=error)
         self.retry(error)
@@ -47,3 +54,15 @@ def flush_celery_tasks(self):
         logger.debug(msg='Celery tasks have been flushed')
     except Exception as error:
         self.retry(error)
+
+
+def send_request_to_main(url, key, headers, message):
+    try:
+        response = requests.post(url=url, headers=headers, json=json.loads(message))
+        logger.info(msg=f'Message with {key} hash has been sent')
+        logger.info(msg=response.status_code)
+
+        r.delete(key)
+        r.srem('hashkeys', key)
+    except Exception as err:
+        pass

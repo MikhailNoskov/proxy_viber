@@ -162,6 +162,14 @@ LOGGING = {
             'backupCount': 10,
             'formatter': 'default',
         },
+        'main_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/main.log',
+            'when': 'midnight',
+            'backupCount': 10,
+            'formatter': 'default',
+        },
     },
     'loggers': {
         'queue_logs': {
@@ -171,6 +179,11 @@ LOGGING = {
         },
         'celery_logs': {
             'handlers': ['celery_handler',],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'main_logs': {
+            'handlers': ['main_handler',],
             'level': 'DEBUG',
             'propagate': True,
         },

@@ -7,6 +7,8 @@ from logging import getLogger
 from viber_filter.replies import REPLIES
 
 logger = getLogger('queue_logs')
+logger_2 = getLogger('main_logs')
+
 r = redis.Redis()
 
 
@@ -40,3 +42,9 @@ def add_to_queue(data):
     except Exception as err:
         logger.warning(msg=f'Warning! Exception! {err}')
         return {}
+
+
+def log_main(header, data):
+    logger_2.debug(msg=header)
+    logger_2.info(msg=data)
+    return
