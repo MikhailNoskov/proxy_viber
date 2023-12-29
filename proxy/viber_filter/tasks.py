@@ -24,8 +24,8 @@ def resend_to_main(self):
                 'X-Celery-ID': task_id
             }
             # Абстрактеый урл главного сервиса
-            # url = ''
-            # requests.post(url=url, headers=headers, json=json.loads(message))
+            url = 'http://'
+            requests.post(url=url, headers=headers, json=json.loads(message))
             logger.info(msg=f'Message with {key} hash has been sent')
             r.delete(key)
             r.srem('hashkeys', key)
