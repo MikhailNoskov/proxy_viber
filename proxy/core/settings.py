@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 from environs import Env
 
@@ -133,3 +133,46 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '{levelname}, {asctime}, {module}, {process:d}/{thread:d} - {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'queue_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/queue.log',
+            'when': 'midnight',
+            'backupCount': 10,
+            'formatter': 'default',
+        },
+        'celery_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/celery.log',
+            'when': 'midnight',
+            'backupCount': 10,
+            'formatter': 'default',
+        },
+    },
+    'loggers': {
+        'queue_logs': {
+            'handlers': ['queue_handler',],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'celery_logs': {
+            'handlers': ['celery_handler',],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

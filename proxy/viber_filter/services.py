@@ -1,9 +1,12 @@
 import hashlib
 import redis
 import json
+from logging import getLogger
+
 
 from viber_filter.replies import REPLIES
 
+logger = getLogger('queue_logs')
 r = redis.Redis()
 
 
@@ -24,14 +27,16 @@ def add_to_queue(data):
     :param data:
     :return:
     """
-    # try:
-    event = data.get('event', None)
-    if event == 'message':
-        encoded_data = json.dumps(data).encode('utf-8')
-        hash_key = hash_message(encoded_data)
-        if not r.exists(hash_key):
-            r.sadd('hashkeys', hash_key)
-            r.set(hash_key, encoded_data)
-    return REPLIES[event]
-    # except Exception:
-    #     return {}
+    try:
+        event = data.get('event', None)
+        if event == 'message':
+            encoded_data = json.dumps(data).encode('utf-8')
+            hash_key = hash_message(encoded_data)
+            if not r.exists(hash_key):
+                r.sadd('hashkeys', hash_key)
+                r.set(hash_key, encoded_data)
+                logger.debug(msg=f'New message {hash_key} added to queue')
+        return REPLIES[event]
+    except Exception as err:
+        logger.warning(msg=f'Warning! Exception! {err}')
+        return {}
