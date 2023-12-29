@@ -13,7 +13,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send_request_to_main': {
             'task': 'viber_filter.tasks.resend_to_main',
-            # 'schedule': crontab(second='*/1'),
             'schedule': schedule(run_every=1),
         },
     'clear_redis_from_tasks': {

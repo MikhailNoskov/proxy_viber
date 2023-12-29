@@ -5,6 +5,8 @@ from viber_filter.services import add_to_queue
 
 
 class ViberMessage(viewsets.ViewSet):
+    http_method_names = ('post',)
+
     @staticmethod
     def create(request):
         response = add_to_queue(request.data)
