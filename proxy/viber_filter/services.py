@@ -2,9 +2,11 @@ import hashlib
 import redis
 import json
 from logging import getLogger
-
+from datetime import datetime, timedelta
 
 from viber_filter.replies import REPLIES
+from viber_filter.tasks import send_single_to_main
+
 
 logger = getLogger('queue_logs')
 logger_2 = getLogger('main_logs')
@@ -29,6 +31,9 @@ def add_to_queue(data):
     :param data:
     :return:
     """
+    headers = {
+        'Content-Type': 'application/json',
+    }
     try:
         event = data.get('event', None)
         if event == 'message':
@@ -36,12 +41,20 @@ def add_to_queue(data):
             hash_key = hash_message(encoded_data)
             if not r.exists(hash_key):
                 r.sadd('hashkeys', hash_key)
-                r.set(hash_key, encoded_data)
+                # r.set(hash_key, encoded_data)
+                kwargs = {
+                    'hash_key': hash_key,
+                    'message_data': encoded_data
+                }
+                task = send_single_to_main.apply_async(
+                    kwargs=kwargs, eta=datetime.now() + timedelta(seconds=len(r.smembers('hashkeys')) % 8)
+                )
+                headers['X-Celery-ID'] = task.id
                 logger.debug(msg=f'New message {hash_key} added to queue')
-        return REPLIES[event]
+        return REPLIES[event], headers
     except Exception as err:
         logger.warning(msg=f'Warning! Exception! {err}')
-        return {}
+        return {}, headers
 
 
 def log_main(header, data):

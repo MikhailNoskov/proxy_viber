@@ -9,9 +9,8 @@ class ViberMessage(viewsets.ViewSet):
 
     @staticmethod
     def create(request):
-        # print(request.headers)
-        response = add_to_queue(request.data)
-        return Response(data=response, status=status.HTTP_200_OK)
+        response, headers = add_to_queue(request.data)
+        return Response(data=response, headers=headers, status=status.HTTP_200_OK)
 
 
 class MainService(viewsets.ViewSet):
