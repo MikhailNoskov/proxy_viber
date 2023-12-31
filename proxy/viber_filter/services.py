@@ -39,15 +39,15 @@ def add_to_queue(data):
         if event == 'message':
             encoded_data = json.dumps(data).encode('utf-8')
             hash_key = hash_message(encoded_data)
-            if not r.exists(hash_key):
+            hashkeys = r.smembers('hashkeys')
+            if hash_key not in hashkeys:
                 r.sadd('hashkeys', hash_key)
-                # r.set(hash_key, encoded_data)
                 kwargs = {
                     'hash_key': hash_key,
                     'message_data': encoded_data
                 }
                 task = send_single_to_main.apply_async(
-                    kwargs=kwargs, eta=datetime.now() + timedelta(seconds=len(r.smembers('hashkeys')) % 8)
+                    kwargs=kwargs, eta=datetime.now() + timedelta(seconds=len(hashkeys) % 8)
                 )
                 headers['X-Celery-ID'] = task.id
                 logger.debug(msg=f'New message {hash_key} added to queue')

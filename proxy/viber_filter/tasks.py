@@ -20,8 +20,8 @@ def send_single_to_main(self, **kwargs):
     task_id = send_single_to_main.request.id
     try:
         # Абстрактеый урл главного сервиса
-        url = 'https://chatbot.com/webhook'
-        # url = 'http://127.0.0.1:8000/viber_messages/main/'
+        # url = 'https://chatbot.com/webhook'
+        url = 'http://127.0.0.1:8000/viber_messages/main/'
         headers = {
             'Content-Type': 'application/json',
             'X-Celery-ID': task_id
